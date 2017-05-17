@@ -291,8 +291,6 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-### DotSettings ###
-*.DotSettings
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
