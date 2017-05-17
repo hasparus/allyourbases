@@ -6,14 +6,15 @@ namespace Sophie.IO
 {
     public class StdinIOController : IOController
     {
-        private const int ReadLineBufferSize = 1 << 13 /*8192*/; 
-        private void ChangeReadlineBufferSize()
-        {
-            
-        }
-
         public StdinIOController()
         {
+            // [ Note ]
+            // Bad news: .NET Core lacks OpenStandardInput(int) method
+            // for extending ReadLine buffer size.
+            // Good news: In .NET Core console app running on Ubuntu
+            // there is no limit on ReadLine buffer size.
+
+
         }
 
     }

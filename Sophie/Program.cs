@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Sophie
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            string input;
+            while ((input = Console.ReadLine()) != null)
+            {
+                Console.WriteLine(
+                    /*Regex.Replace(*/Logic.ExecuteInputLine(input)/*, @"\r\n?|\n", " ")*/);
+            } 
         }
     }
 }

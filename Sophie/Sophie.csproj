@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" />
     <PackageReference Include="newtonsoft.json" Version="10.0.2" />
+    <PackageReference Include="npgsql" Version="3.2.2" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="test\" />
   </ItemGroup>
 
 </Project>
