@@ -18,35 +18,6 @@ namespace Sophie
             Functions[functionName]?.Invoke(parameters).ToJObject() ??
             Result.NotImplemented.ToJObject();
 
-        public static string ExecuteInputLine(string line)
-        {
-            JToken json;
-
-            try
-            {
-                json = JToken.Parse(line);
-            }
-            catch (Exception)
-            {
-                Console.Error.WriteLine("My dear, this is not proper json.");
-                return Result.Error.ToString();
-            }
-
-            if (json == null 
-                || json.Type != JTokenType.Object
-                || !json.First.HasValues
-                || json.First.Type != JTokenType.Property
-                || json.First.First.Type != JTokenType.Object)
-            {
-                return Result.Error.ToString();
-            }
-
-            var propertyName = ((JProperty) json.First).Name;
-            var contents = (JObject) json.First.First;
-
-            return Call(propertyName, contents).ToString(Formatting.None);
-        }
-
         private static readonly ReferenceHash<string, Func<JObject, Result>> Functions =
             new ReferenceHash<string, Func<JObject, Result>>
             {
@@ -66,10 +37,7 @@ namespace Sophie
                 return Error("Method Open got null parameters.");
 
             _connection = new NpgsqlConnection(
-                //$"Server=127.0.0.1;Port=5432;Database={dbName};User Id={login};Password={password};"
-                $"Host=localhost;Username={login};Password=" +
-                $"{MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(password))}" +
-                $";Database={dbName}");
+                $"Host=localhost;Username={login};Password={password};Database={dbName}");
 
             if (_connection == null)
                 return Error("Coudn't create NpgsqlConnection.");
@@ -81,12 +49,5 @@ namespace Sophie
 
             return Result.Ok;
         }
-
-        private static Result Error(string message)
-        {
-            Console.Error.WriteLine(message);
-            return Result.Error;
-        }
-
     }
 }
