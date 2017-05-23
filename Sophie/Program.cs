@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Sophie.IO;
 
 namespace Sophie
 {
@@ -11,7 +12,7 @@ namespace Sophie
             while ((input = Console.ReadLine()) != null)
             {
                 Console.WriteLine(
-                    /*Regex.Replace(*/Logic.ExecuteInputLine(input)/*, @"\r\n?|\n", " ")*/);
+                    IoController.ExecuteInputLine(input));
             } 
         }
     }

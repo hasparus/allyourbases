@@ -27,12 +27,11 @@ namespace Sophie.IO
             }
             catch (Exception)
             {
-                Console.Error.WriteLine("My dear, this is not proper json.");
-                return Logic.Result.Error.ToString();
+                return Logic.Error("Excuse me, this is not proper json.").ToString();
             }
 
             if (!ValidFunctionCallJson(json))
-                return Logic.Result.Error.ToString();
+                return Logic.Error("This json is not valid function call.").ToString();
 
             var propertyName = ((JProperty) json.First).Name;
             var contents = (JObject) json.First.First;
@@ -42,11 +41,11 @@ namespace Sophie.IO
 
         private static bool ValidFunctionCallJson(JToken json)
         {
-            return json == null
-                            || json.Type != JTokenType.Object
-                            || !json.First.HasValues
-                            || json.First.Type != JTokenType.Property
-                            || json.First.First.Type != JTokenType.Object;
+            return json != null 
+                && json.Type == JTokenType.Object 
+                && json.First.HasValues 
+                && json.First.Type == JTokenType.Property 
+                && json.First.First.Type == JTokenType.Object;
         }
     }
 }

@@ -1,1 +1,6 @@
+{ "open": { "daza": "hasparus", "login": "beata", "password": "beata" } }
+{ "open": { "baza": "takiejniema", "login": "beata", "password": "beata" } }
 { "open": { "baza": "hasparus", "login": "beata", "password": "beata" } }
+{ "organizer": { "badkey": "doesntmatter" } }
+{ "organizer": { "secret": "badsecret", "newlogin": "Moriarty", "newpassword": "James"} }
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Joachim", "newpassword": "haslo" } }

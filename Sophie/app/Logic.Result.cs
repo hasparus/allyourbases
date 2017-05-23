@@ -1,14 +1,15 @@
 ﻿using System;
 using Humanizer;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Sophie
 {
     public static partial class Logic
     {
-        private static Result Error(string message)
+        public static Result Error(string message)
         {
-            Console.Error.WriteLine(message);
+            Debug.Log(message);
             return Result.Error;
         }
 
@@ -43,7 +44,7 @@ namespace Sophie
 
             public override string ToString()
             {
-                return ToJObject().ToString();
+                return ToJObject().ToString(Formatting.None);
             }
         }
         
