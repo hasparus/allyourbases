@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -10,121 +9,85 @@ using Humanizer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using Sophie.DataLayer;
 using Sophie.Utils;
 
 namespace Sophie
 {
-    public static partial class Logic
+    public static class Logic
     {
+        private static DataAccess _dataAccess;
+
         public static JObject Call(string functionName, JObject parameters) =>
             Functions[functionName]?.Invoke(parameters).ToJObject() ??
-            Result.NotImplemented.ToJObject();
+            CallResult.NotImplemented.ToJObject();
 
-        private static Func<JObject, Result> SqlProcWrapper(string funcName, params string[] parameters)
+        private static Func<JObject, CallResult> SqlProcWrapper(string procName, params string[] parameters)
         {
-            return x =>
+            return args =>
             {
-                if (!ValidCallParameters(x, parameters))
-                    return Error(
-                        $"Invalid parameters for {funcName} method.");
-                return ExecuteSqlFromString(
-                    $"select ${funcName}("
-                    + string.Join(", ", parameters.Select(key => $"'{x[key]}'"))
+                if (!ValidCallParameters(args, parameters))
+                    return CallResult.Error(
+                        $"Invalid parameters for {procName} sql function.");
+                return _dataAccess.ExecuteSqlFromString(
+                    $"select {procName}("
+                    + string.Join(", ", parameters.Select(key => $"'{args[key]}'"))
                     + ")");
             };
         }
 
-        private static readonly ReferenceHash<string, Func<JObject, Result>> Functions =
-            new ReferenceHash<string, Func<JObject, Result>>
+        private static readonly ReferenceHash<string, Func<JObject, CallResult>> Functions =
+            new ReferenceHash<string, Func<JObject, CallResult>>
             {
                 {"open", Open},
-                {"organizer", x =>
+                {"drop_the_base", args =>
                     {
-                        if (!ValidCallParameters(x, new[] {"secret", "newlogin", "newpassword"}))
-                            return Error("Invalid parameters for Organizer method.");
-                        return ExecuteSqlFromString(
-                            $"select add_organiser('{x["secret"]}', '{x["newlogin"]}', '{x["newpassword"]}');");
+                        if (!ValidCallParameters(args, new[] {"secret"})
+                            || args["secret"].ToString() != "42")
+                            return CallResult.Error("Haha. No dropping if you don't know secret.");
+                        return _dataAccess.ExecuteSqlFromFile("db/drop.sql");
                     }
                 },
-                {"event", x => throw new NotImplementedException()},
+                {"organizer",
+                    SqlProcWrapper("add_organiser", "secret", "newlogin", "newpassword")
+                },
+                {"event",
+                    SqlProcWrapper("add_event", "login", "password", "eventname", "start_timestamp", "end_timestamp")},
             };
 
-        private static string _connectionString;
-
-        private static bool ValidCallParameters(JObject given, IEnumerable<string> requested)
-            => requested.All(p => given[p] != null);
-
-        private static Result Open(JObject parameters)
+        private static CallResult Open(JObject parameters)
         {
-
             if (!ValidCallParameters(parameters, new[] { "baza", "login", "password" }))
-                return Error("Method Open got wrong parameters.");
+                return CallResult.Error("Method Open got wrong parameters.");
 
             string dbName = parameters["baza"].ToString();
             string login = parameters["login"].ToString();
             string password = parameters["password"].ToString();
 
-            _connectionString = $"Host=localhost;Username={login};Password={password};Database={dbName}";
+            _dataAccess = new DataAccess($"Host=localhost;Username={login};Password={password};Database={dbName}");
             try
             {
-                using (var connection = new NpgsqlConnection(_connectionString))
+                using (var connection = _dataAccess.NewConnection())
                 {
                     connection.Open();
 
-                    return connection.IsOpen() 
-                        ? ExecuteSqlFromFile("db/open.sql", connection) 
-                        : Error("Coudn't open connection to database.");
+                    return connection.IsOpen()
+                        ? _dataAccess.ExecuteSqlFromFile("db/open.sql", connection)
+                        : CallResult.Error("Coudn't open connection to database.");
                 }
             }
             catch (PostgresException e)
             {
-                return Error(e.Message);
+                return CallResult.Error(e.Message);
             }
-        }
-
-        public static Result ExecuteSqlFromFile(
-            string filename,
-            NpgsqlConnection connection = null)
-        {
-            connection = connection ?? new NpgsqlConnection(_connectionString);
-
-            using (var fs = new FileStream(filename, FileMode.Open))
-            using (var setupFile = new StreamReader(fs))
-                return ExecuteSqlFromString(setupFile.ReadToEnd(), connection);
-        }
-
-        private static Result ExecuteSqlFromString(
-            string s,
-            NpgsqlConnection connection = null)
-        {
-            try
+            catch (SocketException)
             {
-                connection = connection ?? new NpgsqlConnection(_connectionString);
-                connection.TryOpen();
-                using (var cmd = new NpgsqlCommand(s, connection))
-                using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
-                    {
-                        var x = reader.GetString(0);
-                        Debug.Log("Output from db: " + x);
-                        if (x == "0") return Result.Error; ;
-                    }
-                return Result.Ok;
-            }
-            catch (Npgsql.PostgresException e)
-            {
-                return Error("Postgres exception catched in ExecuteSqlFromString. " + e.Message);
+                Debug.Log("Please enable socket access to PostgreSQL server.");
+                throw;
             }
         }
 
-        private static bool IsOpen(this IDbConnection con)
-            => (con.State & ConnectionState.Open) != 0;
-
-        private static void TryOpen(this IDbConnection con)
-        {
-            if (!con.IsOpen())
-                con.Open();
-        }
-
+        private static bool ValidCallParameters(JObject given, IEnumerable<string> requested)
+            => requested.All(p => given[p] != null);
     }
 }

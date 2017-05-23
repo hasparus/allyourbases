@@ -17,8 +17,18 @@ namespace Sophie.IO
             // there is no limit on ReadLine buffer size.
         }
 
+        private static string SkipComment(string line, bool fallthru = true)
+            => line[0] == '#' ? (fallthru ? "" : line) : null;
+
         public static string ExecuteInputLine(string line)
         {
+            var comment = SkipComment(line, false);
+            if (comment != null)
+            {
+                Debug.Log(comment);
+                return "";
+            }
+
             JToken json;
 
             try
@@ -27,11 +37,11 @@ namespace Sophie.IO
             }
             catch (Exception)
             {
-                return Logic.Error("Excuse me, this is not proper json.").ToString();
+                return CallResult.Error("Excuse me, this is not proper json.").ToString();
             }
 
             if (!ValidFunctionCallJson(json))
-                return Logic.Error("This json is not valid function call.").ToString();
+                return CallResult.Error("This json is not valid function call.").ToString();
 
             var propertyName = ((JProperty) json.First).Name;
             var contents = (JObject) json.First.First;

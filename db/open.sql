@@ -18,7 +18,7 @@ create table if not exists participant (
   joined_timestamp      timestamp with time zone  default now()
 );
 
-create unique index if not exists login_index on participant (login);
+create unique index if not exists participant_login_index on participant (login);
 
 create table if not exists organiser (
   id                    integer                   references participant on delete cascade,
@@ -26,7 +26,7 @@ create table if not exists organiser (
   password_hash         varchar                   not null
 );
 
-create unique index if not exists login_index on organiser (login);
+create unique index if not exists organiser_login_index on organiser (login);
 
 create table if not exists friendship_declaration (
   declarer_id           integer                   references participant on delete cascade,

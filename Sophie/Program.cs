@@ -11,8 +11,8 @@ namespace Sophie
             string input;
             while ((input = Console.ReadLine()) != null)
             {
-                Console.WriteLine(
-                    IoController.ExecuteInputLine(input));
+                var output = IoController.ExecuteInputLine(input);
+                if (output != "") Console.WriteLine(output);
             } 
         }
     }

@@ -11,4 +11,4 @@ drop function if exists add_organiser(varchar, varchar, varchar);
 drop function if exists authorize_organiser(varchar, varchar);
 drop function if exists add_participant(varchar, varchar, varchar, varchar);
 drop function if exists authorize_participant(varchar, varchar);
-drop function if exists add_event(varchar, varchar, timestamp with time zone, timestamp with time zone);
+drop function if exists add_event(varchar, varchar, varchar, timestamp with time zone, timestamp with time zone);
