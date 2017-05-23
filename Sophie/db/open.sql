@@ -18,7 +18,7 @@ create table if not exists participant (
   joined_timestamp      timestamp with time zone  default now()
 );
 
-create index on participant (login);
+create unique index if not exists login_index on participant (login);
 
 create table if not exists organiser (
   id                    integer                   references participant on delete cascade,
@@ -26,7 +26,7 @@ create table if not exists organiser (
   password_hash         varchar                   not null
 );
 
-create index on organiser (login);
+create unique index if not exists login_index on organiser (login);
 
 create table if not exists friendship_declaration (
   declarer_id           integer                   references participant on delete cascade,
@@ -61,7 +61,7 @@ create table if not exists talk (
 );
 
 -- zakładam, że użytkownik będzie mógł wyszukiwać referaty po tytule
-create index on talk (title);
+create index if not exists title_index on talk (title);
 
 create table if not exists rating (
   talk_id               integer                   references talk on delete cascade,
@@ -154,10 +154,34 @@ create or replace function add_event
     returns int as
 $$
 begin
-  if authorize_organiser(org_login, org_password) THEN
+  if authorize_organiser(org_login, org_password) then
     insert into event
       values (ename, start_ts, end_ts);
     return 1;
+  end if;
+  return 0;
+end
+$$ language plpgsql;
+
+---
+
+create or replace function add_talk
+  (org_login varchar, org_password varchar, speaker varchar, talk_id integer, title varchar,
+  start_ts timestamp with time zone, room varchar, init_eval integer, ename varchar)
+    returns int as
+$$
+begin
+  if authorize_organiser(org_login, org_password) then
+    if ename = '' then
+      ename = null;
+    end if;
+
+    --find speaker id
+    --insert value
+
+    --add_rating
+
+    
   end if;
   return 0;
 end

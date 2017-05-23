@@ -20,15 +20,17 @@ namespace Sophie
             Functions[functionName]?.Invoke(parameters).ToJObject() ??
             Result.NotImplemented.ToJObject();
 
-        private static Func<JObject, Result> newRedirectingFunc(string funcName, params string[] parameters)
+        private static Func<JObject, Result> SqlProcWrapper(string funcName, params string[] parameters)
         {
             return x =>
             {
                 if (!ValidCallParameters(x, parameters))
-                    return Error($"Invalid parameters for {funcName} method.");
-                return ExecuteSqlFromString($"select ${funcName}("
-                                            + string.Join(", ", parameters.Select(key => $"'{x[key]}'"))
-                                            + ")");
+                    return Error(
+                        $"Invalid parameters for {funcName} method.");
+                return ExecuteSqlFromString(
+                    $"select ${funcName}("
+                    + string.Join(", ", parameters.Select(key => $"'{x[key]}'"))
+                    + ")");
             };
         }
 
@@ -54,6 +56,7 @@ namespace Sophie
 
         private static Result Open(JObject parameters)
         {
+
             if (!ValidCallParameters(parameters, new[] { "baza", "login", "password" }))
                 return Error("Method Open got wrong parameters.");
 
@@ -68,16 +71,14 @@ namespace Sophie
                 {
                     connection.Open();
 
-                    if (!connection.IsOpen())
-                        return Error("Coudn't open connection to database.");
-
-                    return ExecuteSqlFromFile("db/open.sql", connection);
+                    return connection.IsOpen() 
+                        ? ExecuteSqlFromFile("db/open.sql", connection) 
+                        : Error("Coudn't open connection to database.");
                 }
             }
             catch (PostgresException e)
             {
-                Debug.Log(e.Message);
-                return Result.Error;
+                return Error(e.Message);
             }
         }
 
