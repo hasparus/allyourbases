@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -39,7 +40,7 @@ namespace Sophie.Tests
         }
 
         [Theory, InlineData("organiser", "secret", "newlogin", "newpassword")]
-        public void AddOrganiser()
+        public void AddOrganiser(string funcName, string[] params ParametersEncoder)
         {
             var jo = JObject.Parse(
                 @"{ ""organizer"": { ""secret"": ""d8578edf8458ce06fbc5bb76a58c5ca4"", ""newlogin"": """ +
