@@ -20,6 +20,18 @@ namespace Sophie
             Functions[functionName]?.Invoke(parameters).ToJObject() ??
             Result.NotImplemented.ToJObject();
 
+        private static Func<JObject, Result> newRedirectingFunc(string funcName, params string[] parameters)
+        {
+            return x =>
+            {
+                if (!ValidCallParameters(x, parameters))
+                    return Error($"Invalid parameters for {funcName} method.");
+                return ExecuteSqlFromString($"select ${funcName}("
+                                            + string.Join(", ", parameters.Select(key => $"'{x[key]}'"))
+                                            + ")");
+            };
+        }
+
         private static readonly ReferenceHash<string, Func<JObject, Result>> Functions =
             new ReferenceHash<string, Func<JObject, Result>>
             {
