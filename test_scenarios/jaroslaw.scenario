@@ -1,0 +1,14 @@
+{ "connect": { "baza": "testbase", "login": "beata", "password": "beata" } }
+{ "drop_the_base": { "secret": "42"} }
+{ "setup": { "baza": "hasparus", "login": "beata", "password": "beata" } }
+#
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
+{ "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów", "start_timestamp": "2017-07-07 18:00 +02", "end_timestamp": "2016-07-21 18:00 +02" } }
+#
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Puszek", "newpassword": "Whiskas" } }
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Fiona", "newpassword": "Kocimietka" } }
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Edek", "newpassword": "Edek" } }
+#
+{ "register_user_for_event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "register_user_for_event": { "login": "Fiona", "password": "Kocimietka", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "register_user_for_event": { "login": "Puszek", "password": "Whiskas", "eventname": "Żoliborski zjazd miłośników kotów" } }

@@ -35,8 +35,9 @@ namespace Sophie.IO
             {
                 json = JToken.Parse(line);
             }
-            catch (Exception)
+            catch (JsonReaderException e)
             {
+                Debug.Log(e.Message);
                 return CallResult.Error("Excuse me, this is not proper json.").ToString();
             }
 

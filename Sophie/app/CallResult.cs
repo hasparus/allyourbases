@@ -1,4 +1,5 @@
-﻿using Humanizer;
+﻿using System;
+using Humanizer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,6 +7,11 @@ namespace Sophie
 {
     public struct CallResult
     {
+        public override int GetHashCode()
+        {
+            return (int) State;
+        }
+
         public static CallResult Ok =>
             new CallResult(Status.Ok);
 
@@ -42,5 +48,31 @@ namespace Sophie
         {
             return ToJObject().ToString(Formatting.None);
         }
+
+        public static bool operator ==(CallResult one, CallResult two)
+        {
+            return one.State == two.State;
+        }
+
+        public static bool operator !=(CallResult one, CallResult two)
+        {
+            return !(one == two);
+        }
+
+        public bool Equals(CallResult other)
+        {
+            return State == other.State;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is CallResult && Equals((CallResult) obj);
+        }
+
+        public static CallResult FromStatusHumanizedString(string s) 
+            => Enum.TryParse(s.Dehumanize(), out Status isCallResult) 
+            ? new CallResult(isCallResult) 
+            : Error("Coudn't parse. Returning error.");
     }
 }

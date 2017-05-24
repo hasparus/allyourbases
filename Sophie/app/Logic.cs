@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Humanizer;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using Sophie.DataLayer;
@@ -40,8 +35,12 @@ namespace Sophie
             new ReferenceHash<string, Func<JObject, CallResult>>
             {
                 {"open", Open},
-                {"drop_the_base", args =>
+                {"connect", EstabilishConnection},
+                {"setup", Setup},
+                { "drop_the_base", args =>
                     {
+                        if (_dataAccess?.NewConnection() == null)
+                            return CallResult.Error("Can't drop if connection isn't estabilished");
                         if (!ValidCallParameters(args, new[] {"secret"})
                             || args["secret"].ToString() != "42")
                             return CallResult.Error("Haha. No dropping if you don't know secret.");
@@ -51,18 +50,20 @@ namespace Sophie
                 {"organizer",
                     SqlProcWrapper("add_organiser", "secret", "newlogin", "newpassword")
                 },
+                {"user",
+                    SqlProcWrapper("add_participant", "login", "password", "newlogin", "newpassword")
+                },
                 {"event",
-                    SqlProcWrapper("add_event", "login", "password", "eventname", "start_timestamp", "end_timestamp")},
+                    SqlProcWrapper("add_event", "login", "password", "eventname", "start_timestamp", "end_timestamp")
+                },
             };
 
-        private static CallResult Open(JObject parameters)
+        private static CallResult EstabilishConnection(JObject parameters)
         {
-            if (!ValidCallParameters(parameters, new[] { "baza", "login", "password" }))
-                return CallResult.Error("Method Open got wrong parameters.");
-
-            string dbName = parameters["baza"].ToString();
-            string login = parameters["login"].ToString();
-            string password = parameters["password"].ToString();
+            var pms = AuthorizeConnect(parameters);
+            if (pms == null)
+                return CallResult.Error("Method EstabilishConnection got wrong parameters.");
+            (string dbName, string login, string password) = pms.Value;
 
             _dataAccess = new DataAccess($"Host=localhost;Username={login};Password={password};Database={dbName}");
             try
@@ -72,7 +73,7 @@ namespace Sophie
                     connection.Open();
 
                     return connection.IsOpen()
-                        ? _dataAccess.ExecuteSqlFromFile("db/open.sql", connection)
+                        ? CallResult.Ok
                         : CallResult.Error("Coudn't open connection to database.");
                 }
             }
@@ -85,6 +86,43 @@ namespace Sophie
                 Debug.Log("Please enable socket access to PostgreSQL server.");
                 throw;
             }
+        }
+
+        private static CallResult Setup(JObject parameters)
+        {
+            if (AuthorizeConnect(parameters) == null)
+                return CallResult.Error("Method Setup got wrong parameters.");
+
+            try
+            {
+                using (var connection = _dataAccess.NewConnection())
+                    return _dataAccess.ExecuteSqlFromFile("db/open.sql", connection);
+            }
+            catch (PostgresException e)
+            {
+                return CallResult.Error(e.Message);
+            }
+            catch (SocketException)
+            {
+                Debug.Log("Please enable socket access to PostgreSQL server.");
+                throw;
+            }
+        }
+
+        private static CallResult Open(JObject parameters)
+        {
+            var est = EstabilishConnection(parameters);
+            return est == CallResult.Ok ? Setup(parameters) : est;
+        }
+
+        private static (string, string, string)? AuthorizeConnect(JObject parameters)
+        {
+            if (!ValidCallParameters(parameters, new[] { "baza", "login", "password" }))
+                return null;
+
+            return (parameters["baza"].ToString(),
+                    parameters["login"].ToString(),
+                    parameters["password"].ToString());
         }
 
         private static bool ValidCallParameters(JObject given, IEnumerable<string> requested)

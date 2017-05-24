@@ -49,6 +49,15 @@ namespace Sophie.DataLayer
         }
 
         public NpgsqlConnection NewConnection()
-            => new NpgsqlConnection(_connectionString);
+        {
+            try
+            {
+                return new NpgsqlConnection(_connectionString);
+            }
+            catch (PostgresException)
+            {
+                return null;
+            }
+        }
     }
 }

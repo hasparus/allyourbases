@@ -168,7 +168,7 @@ $$ language plpgsql;
 create or replace function add_talk
   (org_login varchar, org_password varchar, speaker varchar, talk_id integer, title varchar,
   start_ts timestamp with time zone, room varchar, init_eval integer, ename varchar)
-    returns int as
+    returns varchar as
 $$
 begin
   if authorize_organiser(org_login, org_password) then
@@ -176,13 +176,7 @@ begin
       ename = null;
     end if;
 
-    --find speaker id
-    --insert value
-
-    --add_rating
-
-    
   end if;
-  return 0;
+  return "0";
 end
 $$ language plpgsql;

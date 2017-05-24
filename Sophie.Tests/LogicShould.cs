@@ -32,7 +32,7 @@ namespace Sophie.Tests
         public void DropDatabase()
         {
             SetupDatabase();
-            var res = Logic.Call("drop_all", JObject.FromObject(new { secret = 42 }));
+            var res = Logic.Call("drop_the_base", JObject.FromObject(new { secret = 42 }));
             Assert.Equal(CallResult.Status.Ok, ExtractStatus(res));
         }
 
@@ -43,7 +43,7 @@ namespace Sophie.Tests
                 "{ \"baza\": \"testbase\", \"login\": \"beata\", \"password\": \"beata\" }");
 
             var res = Logic.Call("open", jo);
-            Assert.Equal(CallResult.Status.Ok, Enum.Parse(typeof(CallResult.Status), res["status"].ToString()));
+            Assert.Equal(CallResult.Ok, CallResult.FromStatusHumanizedString(res["status"].ToString()));
         }
 
         #endregion
