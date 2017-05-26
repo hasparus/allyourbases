@@ -6,3 +6,4 @@ Info:
 *C#, .Net Core, PostgreSQL*
 
 [Description (in polish)](Description.md).
+[Project name choice reason](https://www.facebook.com/ZOSIA.KSI).
