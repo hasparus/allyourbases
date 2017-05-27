@@ -9,6 +9,8 @@
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Fiona", "newpassword": "Kocimietka" } }
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Edek", "newpassword": "Edek" } }
 #
+
+#
 { "register_user_for_event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów" } }
 { "register_user_for_event": { "login": "Fiona", "password": "Kocimietka", "eventname": "Żoliborski zjazd miłośników kotów" } }
 { "register_user_for_event": { "login": "Puszek", "password": "Whiskas", "eventname": "Żoliborski zjazd miłośników kotów" } }
