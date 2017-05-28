@@ -1,7 +1,7 @@
 # 2 fails, 1 success:
-{ "open": { "daza": "hasparus", "login": "beata", "password": "beata" } }
+{ "open": { "daza": "testbase", "login": "beata", "password": "beata" } }
 { "open": { "baza": "takiejniema", "login": "beata", "password": "beata" } }
-{ "open": { "baza": "hasparus", "login": "beata", "password": "beata" } }
+{ "open": { "baza": "testbase", "login": "beata", "password": "beata" } }
 # 2 fails, 2 successes:
 { "organizer": { "badkey": "doesntmatter" } }
 { "organizer": { "secret": "badsecret", "newlogin": "Moriarty", "newpassword": "James"} }

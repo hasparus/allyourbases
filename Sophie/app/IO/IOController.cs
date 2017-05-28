@@ -17,15 +17,17 @@ namespace Sophie.IO
             // there is no limit on ReadLine buffer size.
         }
 
-        private static string SkipComment(string line, bool fallthru = true)
-            => line[0] == '#' ? (fallthru ? "" : line) : null;
+        private static string SkipCommentAndEmptyLine(string line, bool silence = true)
+            => line.Trim().Length == 0 || line[0] == '#'
+               ? silence ? "" : line
+               : null;
 
         public static string ExecuteInputLine(string line)
         {
-            var comment = SkipComment(line, false);
+            var comment = SkipCommentAndEmptyLine(line, false);
             if (comment != null)
             {
-                Debug.Log(comment);
+                if (comment != "") Debug.Log(comment);
                 return "";
             }
 

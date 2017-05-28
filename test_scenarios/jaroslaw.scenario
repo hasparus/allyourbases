@@ -1,6 +1,6 @@
 { "connect": { "baza": "testbase", "login": "beata", "password": "beata" } }
 { "drop_the_base": { "secret": "42"} }
-{ "setup": { "baza": "hasparus", "login": "beata", "password": "beata" } }
+{ "setup": { "baza": "testbase", "login": "beata", "password": "beata" } }
 #
 { "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
 { "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów", "start_timestamp": "2017-07-07 18:00 +02", "end_timestamp": "2016-07-21 18:00 +02" } }
@@ -9,8 +9,52 @@
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Fiona", "newpassword": "Kocimietka" } }
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Edek", "newpassword": "Edek" } }
 #
-
-#
 { "register_user_for_event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów" } }
 { "register_user_for_event": { "login": "Fiona", "password": "Kocimietka", "eventname": "Żoliborski zjazd miłośników kotów" } }
 { "register_user_for_event": { "login": "Puszek", "password": "Whiskas", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "register_user_for_event": { "login": "Edek", "password": "Edek", "eventname": "Żoliborski zjazd miłośników kotów" } }
+
+#{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": null, "title": "SUPERTALK", "start_timestamp": "2017-07-07 18:15", "room": "s1", "initial_evaluation": "10", "eventname": "Żoliborski zjazd miłośników kotów" } }
+
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": null, "title": "Otwarcie. Za 500+ likeów darmowy hotdog.", "start_timestamp": "2017-07-07 18:15 +02", "room": "Sala tronowa", "initial_evaluation": 10, "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Fiona", "talk": null, "title": "Porównanie karm największych producentów", "start_timestamp": "2017-07-07 19:00 +02", "room": "Sala tronowa", "initial_evaluation": 7, "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Puszek", "talk": null, "title": "Historyczne Europejskie Sztuki Walki dla czworonogów", "start_timestamp": "2017-07-07 18:15 +02", "room": "Dziedziniec", "initial_evaluation": 3, "eventname": "Żoliborski zjazd miłośników kotów" } }
+
+{ "proposal": { "login": "Edek", "password": "Edek", "talk": null, "title": "Skromna propozycja Edka", "start_timestamp": "2017-07-08 12:00 +02" } }
+{ "proposal": { "login": "Fiona", "password": "Kocimietka", "talk": null, "title": "Świetna propozycja Fiony", "start_timestamp": "2017-07-08 12:00 +02" } }
+
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Edek", "talk": 4, "title": "Zaakceptowana propozycja Edka", "start_timestamp": "2017-07-08 12:30 +02", "room": "Sala tronowa", "initial_evaluation": 8, "eventname": "Żoliborski zjazd miłośników kotów" } }
+
+{ "attendance": { "login": "Edek", "password": "Edek" , "talk": 4 } }
+{ "attendance": { "login": "Edek", "password": "Edek" , "talk": 3 } }
+
+{ "evaluation": { "login": "Edek", "password": "Edek" , "talk": 4, "rating": 5 } }
+{ "evaluation": { "login": "Fiona", "password": "Kocimietka" , "talk": 4, "rating": 6 } }
+# Jaroslaw zmienia wystawioną przez siebie ocenę prelekcji Edka:
+{ "evaluation": { "login": "Jaroslaw", "password": "Puszek" , "talk": 4, "rating": 1 } }
+# Jaroslaw odrzuca wykład Fiony
+{ "reject": { "login": "Jaroslaw", "password": "Puszek", "talk": 5 } }
+
+{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Puszek" } }
+{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Edek" } }
+{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Jaroslaw" } }
+{ "friends": { "login": "Edek", "password": "Edek", "login2": "Fiona" } }
+{ "friends": { "login": "Edek", "password": "Edek", "login2": "Puszek" } }
+{ "friends": { "login": "Puszek", "password": "Whiskas", "login2": "Edek" } }
+
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Gargamel", "newpassword": "Klakier" } }
+{ "user": { "login": "Gargamel", "password": "Klakier", "newlogin": "Klakier", "newpassword": "Rudy102" } }
+{ "user": { "login": "Gargamel", "password": "Klakier", "newlogin": "Smerfetka", "newpassword": "BlueJasmine" } }
+{ "register_user_for_event": { "login": "Gargamel", "password": "Klakier", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "register_user_for_event": { "login": "Klakier", "password": "Rudy102", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "register_user_for_event": { "login": "Smerfetka", "password": "BlueJasmine", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "attendance": { "login": "Gargamel", "password": "Klakier" , "talk": 3 } }
+{ "attendance": { "login": "Klakier", "password": "Rudy102" , "talk": 3 } }
+{ "attendance": { "login": "Smerfetka", "password": "BlueJasmine" , "talk": 3 } }
+{ "attendance": { "login": "Smerfetka", "password": "BlueJasmine" , "talk": 5 } }
+
+{ "evaluation": { "login": "Smerfetka", "password": "BlueJasmine" , "talk": 5, "rating": 3 } }
+{ "evaluation": { "login": "Smerfetka", "password": "BlueJasmine" , "talk": 3, "rating": 7 } }
+{ "evaluation": { "login": "Klakier", "password": "Rudy102" , "talk": 5, "rating": 6 } }
+{ "evaluation": { "login": "Klakier", "password": "Rudy102" , "talk": 3, "rating": 3 } }
+{ "evaluation": { "login": "Gargamel", "password": "Klakier" , "talk": 3, "rating": 1 } }

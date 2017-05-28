@@ -29,6 +29,8 @@ namespace Sophie.DataLayer
         {
             try
             {
+                Debug.Log("---!~~>" + s);
+
                 connection = connection ?? new NpgsqlConnection(_connectionString);
                 connection.TryOpen();
 
@@ -36,7 +38,7 @@ namespace Sophie.DataLayer
                 using (var reader = cmd.ExecuteReader())
                     while (reader.Read())
                     {
-                        var x = reader.GetString(0);
+                        var x = reader.GetString(0); // takes first element of a tuple in db
                         Debug.Log("Output from db: " + x);
                         if (x == "0") return CallResult.Error("Conference API authorization failed."); ;
                     }
