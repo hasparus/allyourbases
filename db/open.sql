@@ -491,7 +491,9 @@ begin
     select t.id, t.start_timestamp, t.title, t.room from
       talk t
       join attendance a on (t.id = a.talk_id)
-      where participant_id = p;
+      where t.rejected_timestamp is null
+        and t.accepted_timestamp is not null
+        and participant_id = p;
 end
 $$ language plpgsql;
 

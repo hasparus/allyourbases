@@ -7,6 +7,12 @@ namespace Sophie
 {
     public struct CallResult
     {
+        public static Formatting Formatting = Formatting.None;
+
+        public readonly Status State;
+        public readonly JArray Data;
+
+
         public override int GetHashCode()
         {
             return (int) State;
@@ -31,22 +37,27 @@ namespace Sophie
             Error
         }
 
-        public readonly Status State;
-
-        public CallResult(Status state)
+        public CallResult(Status state, JArray data = null)
         {
             State = state;
+            Data = data;
         }
 
-        public JObject ToJObject() =>
-            new JObject
+        public JObject ToJObject()
+        {
+            var jo = new JObject
             {
-                ["status"] = State.Humanize(),
+                ["status"] = State.Humanize()
             };
+
+            if (Data != null && Data.Count > 0)
+                jo["data"] = Data;
+            return jo;
+        }
 
         public override string ToString()
         {
-            return ToJObject().ToString(Formatting.None);
+            return ToJObject().ToString(Formatting);
         }
 
         public static bool operator ==(CallResult one, CallResult two)
@@ -74,5 +85,7 @@ namespace Sophie
             => Enum.TryParse(s.Dehumanize(), out Status isCallResult) 
             ? new CallResult(isCallResult) 
             : Error("Coudn't parse. Returning error.");
+
+        public static string DbError = "0";
     }
 }

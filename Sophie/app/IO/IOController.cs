@@ -49,7 +49,7 @@ namespace Sophie.IO
             var propertyName = ((JProperty) json.First).Name;
             var contents = (JObject) json.First.First;
 
-            return Logic.Call(propertyName, contents).ToString(Formatting.None);
+            return Logic.Call(propertyName, contents).ToString(CallResult.Formatting);
         }
 
         private static bool ValidFunctionCallJson(JToken json)

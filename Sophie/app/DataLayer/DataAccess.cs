@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 
 namespace Sophie.DataLayer
@@ -29,20 +34,48 @@ namespace Sophie.DataLayer
         {
             try
             {
-                Debug.Log("---!~~>" + s);
+                //Debug.Log("---!~~>" + s);
 
                 connection = connection ?? new NpgsqlConnection(_connectionString);
                 connection.TryOpen();
 
                 using (var cmd = new NpgsqlCommand(s, connection))
-                using (var reader = cmd.ExecuteReader())
+                {
+                    var reader = cmd.ExecuteReader();
+                    JArray data = new JArray();
                     while (reader.Read())
                     {
-                        var x = reader.GetString(0); // takes first element of a tuple in db
-                        Debug.Log("Output from db: " + x);
-                        if (x == "0") return CallResult.Error("Conference API authorization failed."); ;
+                        var x = reader.GetString(0);
+                        CallResult? breakingResult = null;
+
+                        if (reader.FieldCount == 1)
+                            breakingResult = x == CallResult.DbError 
+                                ? CallResult.Error("Conference API authorization failed.") 
+                                : CallResult.Ok;
+
+                        if (breakingResult != null)
+                        {
+                            reader.Dispose();
+                            return breakingResult.Value;
+                        }
+
+                        // db returned data:
+                        data.Add(
+                            new JObject(
+                                Enumerable.Range(0, reader.FieldCount).Select(
+                                    index =>
+                                        new JProperty(reader.GetName(index), 
+                                        typeof(DBNull) == reader.GetValue(index).GetType()
+                                            ? "null" : reader.GetValue(index)
+                                        )
+                                    )
+                                )
+                            );
                     }
-                return CallResult.Ok;
+                    reader.Dispose();
+                    //Debug.Log("Output from db: " + data);
+                    return new CallResult(CallResult.Status.Ok, data);
+                }
             }
             catch (PostgresException e)
             {

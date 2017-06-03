@@ -3,7 +3,7 @@
 { "setup": { "baza": "testbase", "login": "beata", "password": "beata" } }
 #
 { "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
-{ "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów", "start_timestamp": "2017-07-07 18:00 +02", "end_timestamp": "2016-07-21 18:00 +02" } }
+{ "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Żoliborski zjazd miłośników kotów", "start_timestamp": "2017-07-07 18:00 +02", "end_timestamp": "2017-07-21 18:00 +02" } }
 #
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Puszek", "newpassword": "Whiskas" } }
 { "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Fiona", "newpassword": "Kocimietka" } }
@@ -58,3 +58,45 @@
 { "evaluation": { "login": "Klakier", "password": "Rudy102" , "talk": 5, "rating": 6 } }
 { "evaluation": { "login": "Klakier", "password": "Rudy102" , "talk": 3, "rating": 3 } }
 { "evaluation": { "login": "Gargamel", "password": "Klakier" , "talk": 3, "rating": 1 } }
+
+{ "user_plan": { "login": "Jaroslaw", "limit": 0 } }
+{ "user_plan": { "login": "Klakier", "limit": 0 } }
+{ "user_plan": { "login": "Klakier", "limit": 1 } }
+
+{ "day_plan": { "timestamp": "2017-07-07" } }
+
+{ "best_talks": { "start_timestamp": "2017-01-01", "end_timestamp": "2018-01-01", "limit": 0, "all": 1 } }
+{ "best_talks": { "start_timestamp": "2017-01-01", "end_timestamp": "2018-01-01", "limit": 0, "all": 0 } }
+
+{ "most_popular_talks": { "start_timestamp": "2017-01-01", "end_timestamp": "2018-01-01", "limit": 2 } }
+
+{ "attended_talks": { "login": "Smerfetka", "password": "BlueJasmine" } }
+
+{ "abandoned_talks": { "login": "Gargamel", "password": "Klakier", "limit": 0 } }
+
+{ "recently_added_talks": { "limit": 0 } }
+
+{ "rejected_talks": { "login": "Fiona", "password": "Kocimietka" } }
+{ "rejected_talks": { "login": "Smerfetka", "password": "BlueJasmine" } }
+{ "rejected_talks": { "login": "Gargamel", "password": "Klakier" } }
+
+{ "proposals": { "login": "Jaroslaw", "password": "Puszek" } }
+
+{ "friends_talks": { "login": "Edek", "password": "Edek", "start_timestamp": "2017-01-01", "end_timestamp": "2018-01-01", "limit": 0 } }
+
+
+{ "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Tajne wydarzenie Jarosława", "start_timestamp": "2017-07-07 17:00 +02", "end_timestamp": "2017-07-20 13:00 +02" } }
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Wilhelm", "newpassword": "Wilhelm" } }
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Vlad", "newpassword": "Vlad" } }
+
+{ "register_user_for_event": { "login": "Edek", "password": "Edek", "eventname": "Tajne wydarzenie Jarosława" } }
+{ "register_user_for_event": { "login": "Wilhelm", "password": "Wilhelm", "eventname": "Tajne wydarzenie Jarosława" } }
+{ "register_user_for_event": { "login": "Vlad", "password": "Vlad", "eventname": "Tajne wydarzenie Jarosława" } }
+{ "friends": { "login": "Wilhelm", "password": "Wilhelm", "login2": "Edek" } }
+{ "friends": { "login": "Edek", "password": "Edek", "login2": "Wilhelm" } }
+{ "friends": { "login": "Edek", "password": "Edek", "login2": "Vlad" } }
+
+{ "friends_events": { "login": "Edek", "password": "Edek", "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "friends_events": { "login": "Edek", "password": "Edek", "eventname": "Tajne wydarzenie Jarosława" } }
+
+{ "recommended_talks": { "login": "Edek", "password": "Edek", "start_timestamp": "2017-01-01", "end_timestamp": "2018-01-01", "limit": 0 } }
