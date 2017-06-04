@@ -26,4 +26,11 @@ in this directory.
 
 ## How to test?
 
-`./sophie.rb t[est] [test_scenarios/some.scenario]`
+* ruby input tests:
+    `./sophie.rb t[est] [test_scenarios/some.scenario]`
+
+* C# xunit unit tests in directory Sophie.Tests
+
+## ER Diagrams
+
+ER diagrams are located in `entity_relation_diagrams/` directory.
