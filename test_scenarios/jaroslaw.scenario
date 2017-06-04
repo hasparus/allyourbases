@@ -16,12 +16,12 @@
 
 #{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": null, "title": "SUPERTALK", "start_timestamp": "2017-07-07 18:15", "room": "s1", "initial_evaluation": "10", "eventname": "Żoliborski zjazd miłośników kotów" } }
 
-{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": null, "title": "Otwarcie. Za 500+ likeów darmowy hotdog.", "start_timestamp": "2017-07-07 18:15 +02", "room": "Sala tronowa", "initial_evaluation": 10, "eventname": "Żoliborski zjazd miłośników kotów" } }
-{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Fiona", "talk": null, "title": "Porównanie karm największych producentów", "start_timestamp": "2017-07-07 19:00 +02", "room": "Sala tronowa", "initial_evaluation": 7, "eventname": "Żoliborski zjazd miłośników kotów" } }
-{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Puszek", "talk": null, "title": "Historyczne Europejskie Sztuki Walki dla czworonogów", "start_timestamp": "2017-07-07 18:15 +02", "room": "Dziedziniec", "initial_evaluation": 3, "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": "1", "title": "Otwarcie. Za 500+ likeów darmowy hotdog.", "start_timestamp": "2017-07-07 18:15 +02", "room": "Sala tronowa", "initial_evaluation": 10, "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Fiona", "talk": "2", "title": "Porównanie karm największych producentów", "start_timestamp": "2017-07-07 19:00 +02", "room": "Sala tronowa", "initial_evaluation": 7, "eventname": "Żoliborski zjazd miłośników kotów" } }
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Puszek", "talk": "3", "title": "Historyczne Europejskie Sztuki Walki dla czworonogów", "start_timestamp": "2017-07-07 18:15 +02", "room": "Dziedziniec", "initial_evaluation": 3, "eventname": "Żoliborski zjazd miłośników kotów" } }
 
-{ "proposal": { "login": "Edek", "password": "Edek", "talk": null, "title": "Skromna propozycja Edka", "start_timestamp": "2017-07-08 12:00 +02" } }
-{ "proposal": { "login": "Fiona", "password": "Kocimietka", "talk": null, "title": "Świetna propozycja Fiony", "start_timestamp": "2017-07-08 12:00 +02" } }
+{ "proposal": { "login": "Edek", "password": "Edek", "talk": "4", "title": "Skromna propozycja Edka", "start_timestamp": "2017-07-08 12:00 +02" } }
+{ "proposal": { "login": "Fiona", "password": "Kocimietka", "talk": "5", "title": "Świetna propozycja Fiony", "start_timestamp": "2017-07-08 12:00 +02" } }
 
 { "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Edek", "talk": "4", "title": "Zaakceptowana propozycja Edka", "start_timestamp": "2017-07-08 12:30 +02", "room": "Sala tronowa", "initial_evaluation": 8, "eventname": "Żoliborski zjazd miłośników kotów" } }
 

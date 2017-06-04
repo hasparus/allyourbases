@@ -1,4 +1,4 @@
--- Piotr Pietrzak 274620, model fizyczny.
+-- piotr pietrzak 274620,  model fizyczny.
 
 -- notatka:
 -- "different from other database systems, 
@@ -51,7 +51,7 @@ create table if not exists registration (
 );
 
 create table if not exists talk (
-  id                    serial                    primary key,
+  id                    varchar                   primary key,
   title                 varchar                   not null,
   event_name            varchar                   references event on delete cascade,
   speaker_id            integer                   references participant on delete cascade,
@@ -66,7 +66,7 @@ create table if not exists talk (
 create index if not exists title_index on talk (title);
 
 create table if not exists rating (
-  talk_id               integer                   references talk on delete cascade,
+  talk_id               varchar                   references talk on delete cascade,
   participant_id        integer                   references participant on delete cascade,
   rating                integer                   check (rating >= 0 and rating <= 10),
   created_timestamp     timestamp with time zone  not null default now(),
@@ -74,7 +74,7 @@ create table if not exists rating (
 );
 
 create table if not exists attendance (
-  talk_id               integer                   references talk on delete cascade,
+  talk_id               varchar                   references talk on delete cascade,
   participant_id        integer                   references participant on delete cascade,
   created_timestamp     timestamp with time zone  not null default now(),
   primary key (talk_id, participant_id)
@@ -196,7 +196,7 @@ $$ language plpgsql;
 
 --(*u) evaluation <login> <password> <talk> <rating> // ocena referatu <talk> w skali 0-10 przez uczestnika <login>
 create or replace function rate
-  (login varchar, password varchar, _talk_id integer, _rating integer)
+  (login varchar, password varchar, _talk_id varchar, _rating integer)
     returns integer as
 $$
 declare
@@ -219,7 +219,7 @@ $$ language plpgsql;
 ---
 
 create or replace function add_talk
-  (org_login varchar, org_password varchar, speaker varchar, talk_id integer, _title varchar,
+  (org_login varchar, org_password varchar, speaker varchar, talk_id varchar, _title varchar,
   start_ts timestamp with time zone, _room varchar, init_eval integer, ename varchar)
     returns int as
 $$
@@ -237,19 +237,16 @@ begin
       where login = speaker
       limit 1;
       
-    if talk_id is null then
-      with inserted as (
-        insert into talk
-          values (default, _title, ename, speaker_id, start_ts, _room, null, null, now())
-          returning id )
-      select id from inserted
-        into talk_id;
-    else
-      update talk
-        set (title, event_name, room, start_timestamp, accepted_timestamp) 
-          = (_title, ename, _room, start_ts, now())
-        where id = talk_id;
-    end if;
+    insert into talk (id, title, event_name, room, start_timestamp, accepted_timestamp)
+      values (talk_id, _title, ename, _room, start_ts, now())
+      on conflict (id) 
+        do update set
+          title = _title,
+          event_name = ename,
+          room = _room,
+          start_timestamp = start_ts,
+          accepted_timestamp = now();
+        
 
     return rate(org_login, org_password, talk_id, init_eval);
   end if;
@@ -259,7 +256,7 @@ $$ language plpgsql;
 
 --(*u) attendance <login> <password> <talk> // odnotowanie faktycznej obecności uczestnika <login> na referacie <talk>
 create or replace function note_attendance
-  (login varchar, password varchar, talk_id integer)
+  (login varchar, password varchar, talk_id varchar)
     returns integer as
 $$
 declare
@@ -279,7 +276,7 @@ $$ language plpgsql;
 
 --(o) reject <login> <password> <talk> // usuwa referat spontaniczny <talk> z listy zaproponowanych,
 create or replace function cancel_talk
-  (login varchar, password varchar, talk_id integer)
+  (login varchar, password varchar, talk_id varchar)
     returns int as
 $$
 begin
@@ -295,7 +292,7 @@ $$ language plpgsql;
 
 --(u) proposal  <login> <password> <talk> <title> <start_timestamp> // propozycja referatu spontanicznego, <talk> - unikalny identyfikator referatu
 create or replace function propose_talk
-  (login varchar, password varchar, talk_id integer, talk_title varchar, start_ts timestamp with time zone)
+  (login varchar, password varchar, talk_id varchar, talk_title varchar, start_ts timestamp with time zone)
     returns integer as
 $$
 declare
@@ -305,16 +302,8 @@ begin
     into p;
 
   if p is not null then
-    if talk_id is null then
-      insert into talk
-        values (default, talk_title, null, p, start_ts, null, now(), null, null);
-    else
-      update talk -- po coś w specyfikacji jest to <talk>, nie?
-        set (title, start_timestamp, proposed_timestamp) 
-          = (talk_title, start_ts, now())
-        where id = talk_id
-              and speaker_id = p;
-    end if;
+    insert into talk
+      values (talk_id, talk_title, null, p, start_ts, null, now(), null, null);
     return 1;
   end if;
   return 0;
@@ -346,16 +335,16 @@ $$ language plpgsql;
 
 
 
---(*N) user_plan <login> <limit>
+--(*n) user_plan <login> <limit>
 -- // zwraca plan najbliższych referatów z wydarzeń, na które dany uczestnik jest zapisany 
 -- (wg rejestracji na wydarzenia) posortowany wg czasu rozpoczęcia, wypisuje pierwsze <limit> referatów, przy czym 0 oznacza,
 -- że należy wypisać wszystkie
---// Atrybuty zwracanych krotek: 
+--// atrybuty zwracanych krotek: 
 --   <login> <talk> <start_timestamp> <title> <room>
 
 create or replace function get_user_plan
   (_login varchar, _limit bigint)
-    returns table (login varchar, talk integer, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (login varchar, talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 begin
   if _limit = 0 then
@@ -376,13 +365,13 @@ begin
 end
 $$ language plpgsql;
 
---(*N) day_plan <timestamp> 
+--(*n) day_plan <timestamp> 
 -- // zwraca listę wszystkich referatów zaplanowanych na dany dzień posortowaną rosnąco wg sal,
 --    w drugiej kolejności wg czasu rozpoczęcia
 --//  <talk> <start_timestamp> <title> <room>
 create or replace function get_day_plan
   (daystamp timestamp with time zone)
-    returns table (talk integer, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 begin
 
@@ -397,7 +386,7 @@ begin
 end
 $$ language plpgsql;
 
---(*N) best_talks <start_timestamp> <end_timestamp> <limit> <all> 
+--(*n) best_talks <start_timestamp> <end_timestamp> <limit> <all> 
 --// zwraca referaty rozpoczynające się w  danym przedziale czasowym
 --   posortowane malejąco wg średniej oceny uczestników, 
 --   przy czym jeśli <all> jest równe 1 należy wziąć pod uwagę wszystkie oceny, 
@@ -406,7 +395,7 @@ $$ language plpgsql;
 --//  <talk> <start_timestamp> <title> <room>
 create or replace function get_best_talks
   (_start_timestamp timestamp with time zone, _end_timestamp timestamp with time zone, _limit bigint, _all integer)
-    returns table (talk integer, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 begin
   if _limit = 0 then
@@ -442,13 +431,13 @@ begin
 end
 $$ language plpgsql;
 
---(*N) most_popular_talks <start_timestamp> <end_timestamp> <limit> 
+--(*n) most_popular_talks <start_timestamp> <end_timestamp> <limit> 
 --// zwraca referaty rozpoczynające się w podanym przedziału czasowego posortowane malejąco wg obecności, 
 --   wypisuje pierwsze <limit> referatów, przy czym 0 oznacza, że należy wypisać wszystkie
 --//  <talk> <start_timestamp> <title> <room>
 create or replace function get_most_popular_talks
   (_start_timestamp timestamp with time zone, _end_timestamp timestamp with time zone, _limit bigint)
-    returns table (talk integer, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 begin
   if _limit = 0 then
@@ -469,13 +458,13 @@ end
 $$ language plpgsql;
 
 
---(*U) attended_talks <login> <password> 
+--(*u) attended_talks <login> <password> 
 --// zwraca dla danego uczestnika referaty, na których był obecny 
 --//  <talk> <start_timestamp> <title> <room>
 
 create or replace function get_attended_talks
   (login varchar, password varchar)
-    returns table (talk integer, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 declare
   p integer;
@@ -497,7 +486,7 @@ begin
 end
 $$ language plpgsql;
 
---(*O) abandoned_talks <login> <password>  <limit> 
+--(*o) abandoned_talks <login> <password>  <limit> 
 --// zwraca listę referatów posortowaną malejąco wg liczby uczestników <number> 
 -- zarejestrowanych na wydarzenie obejmujące referat, którzy nie byli na tym referacie obecni, 
 -- wypisuje pierwsze <limit> referatów, przy czym 0 oznacza, że należy wypisać wszystkie
@@ -505,7 +494,7 @@ $$ language plpgsql;
 
 create or replace function get_abandoned_talks
   (_login varchar, _password varchar, _limit bigint)
-    returns table (talk integer, start_timestamp timestamp with time zone, title varchar, room varchar, number bigint) as
+    returns table (talk varchar, start_timestamp timestamp with time zone, title varchar, room varchar, number bigint) as
 $$
 begin
   if authorize_organiser(_login, _password) then
@@ -534,18 +523,18 @@ begin
     return;
   
   end if;
-  raise 'Organiser authorization fail.';
+  raise 'organiser authorization fail.';
 end
 $$ language plpgsql;
 
---(N) recently_added_talks <limit> 
+--(n) recently_added_talks <limit> 
 -- // zwraca listę ostatnio zarejestrowanych referatów,
 --  wypisuje ostatnie <limit> referatów wg daty zarejestrowania, przy czym 0 oznacza, że należy wypisać wszystkie
 --//  <talk> <speakerlogin> <start_timestamp> <title> <room>
 
 create or replace function get_recently_accepted_talks
   (_limit bigint)
-    returns table (talk integer, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 begin
   if _limit = 0 then
@@ -564,14 +553,14 @@ begin
 end
 $$ language plpgsql;
 
---(U/O) rejected_talks <login> <password> 
+--(u/o) rejected_talks <login> <password> 
 --// jeśli wywołujący ma uprawnienia organizatora zwraca listę wszystkich odrzuconych referatów spontanicznych,
 --   w przeciwnym przypadku listę odrzuconych referatów wywołującego ją uczestnika 
 --//  <talk> <speakerlogin> <start_timestamp> <title>
 
 create or replace function get_rejected_talks
   (_login varchar, _password varchar)
-    returns table (talk integer, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar) as
+    returns table (talk varchar, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar) as
 $$
 declare
   _p integer;
@@ -606,14 +595,14 @@ end
 $$ language plpgsql;
 
 
---(O) proposals <login> <password> 
+--(o) proposals <login> <password> 
 --// zwraca listę propozycji referatów spontanicznych do zatwierdzenia lub odrzucenia, 
 --   zatwierdzenie lub odrzucenie referatu polega na wywołaniu przez organizatora funkcji talk lub reject z odpowiednimi parametrami
 --//  <talk> <speakerlogin> <start_timestamp> <title>
 
 create or replace function get_proposals
   (_login varchar, _password varchar)
-    returns table (talk integer, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar) as
+    returns table (talk varchar, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar) as
 $$
 begin
   if authorize_organiser(_login, _password) then
@@ -631,14 +620,14 @@ begin
 end
 $$ language plpgsql;
 
---(U) friends_talks <login> <password> <start_timestamp> <end_timestamp> <limit> 
+--(u) friends_talks <login> <password> <start_timestamp> <end_timestamp> <limit> 
 --// lista referatów  rozpoczynających się w podanym przedziale czasowym wygłaszanych przez znajomych danego
 --    uczestnika posortowana wg czasu rozpoczęcia, wypisuje pierwsze <limit> referatów, przy czym 0 oznacza, że należy wypisać wszystkie
 --//  <talk> <speakerlogin> <start_timestamp> <title> <room>
 
 create or replace function get_friends_talks
   (_login varchar, _password varchar, _start_timestamp timestamp with time zone, _end_timestamp timestamp with time zone, _limit bigint)
-    returns table (talk integer, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
+    returns table (talk varchar, speakerlogin varchar, start_timestamp timestamp with time zone, title varchar, room varchar) as
 $$
 declare
   _p integer;
@@ -673,7 +662,7 @@ begin
 end
 $$ language plpgsql;
 
---(U) friends_events <login> <password> <eventname> // lista znajomych uczestniczących w danym wydarzeniu
+--(u) friends_events <login> <password> <eventname> // lista znajomych uczestniczących w danym wydarzeniu
 --//  <login> <eventname> <friendlogin> 
 
 create or replace function get_friends_on_event
@@ -704,10 +693,33 @@ begin
 end
 $$ language plpgsql;
 
---(U) recommended_talks <login> <password> <start_timestamp> <end_timestamp> <limit> 
---// zwraca referaty rozpoczynające się w podanym przedziale czasowym, 
--- które mogą zainteresować danego uczestnika (zaproponuj parametr <score> obliczany na podstawie dostępnych danych 
--- - ocen, obecności, znajomości itp.), wypisuje pierwsze <limit> referatów wg nalepszego <score>, 
--- przy czym 0 oznacza, że należy wypisać wszystkie
---//  <talk> <speakerlogin> <start_timestamp> <title> <room> <score>
--- TODO: inside app
+---
+
+create or replace function validate_new_talk_timestamp() 
+  returns trigger as 
+$$
+  declare
+    event_start timestamp with time zone;
+    event_end timestamp with time zone;
+  begin
+    select start_timestamp, end_timestamp 
+      into event_start, event_end
+      from event
+      where event_name = new.event_name;
+    
+    if new.start_timestamp < event_start then
+        raise exception 'Talk cannot start before its event.';
+    end if;
+
+    if new.start_timestamp > event_end then
+        raise exception 'Talk cannot start after its event.';
+    end if;
+
+    return new;
+  end;
+$$ language plpgsql;
+
+drop trigger if exists new_talk_validate_timestamp_trigger on talk; 
+create trigger new_talk_validate_timestamp_trigger
+  before insert or update on talk
+  for each row execute procedure validate_new_talk_timestamp();

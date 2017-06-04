@@ -34,7 +34,7 @@ namespace Sophie.DataLayer
         {
             try
             {
-                //Debug.Log("---!~~>" + s);
+                Debug.Log(" executing ~~> " + s);
 
                 connection = connection ?? new NpgsqlConnection(_connectionString);
                 connection.TryOpen();

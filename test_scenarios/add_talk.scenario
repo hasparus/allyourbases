@@ -1,0 +1,15 @@
+{ "connect": { "baza": "testbase", "login": "beata", "password": "beata" } }
+{ "drop_the_base": { "secret": "42"} }
+{ "setup": { "baza": "testbase", "login": "beata", "password": "beata" } }
+
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
+{ "event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Dodawanie referatów", "start_timestamp": "2017-07-07 18:00 +02", "end_timestamp": "2017-07-21 18:00 +02" } }
+
+{ "user": { "login": "Jaroslaw", "password": "Puszek", "newlogin": "Edek", "newpassword": "Edek" } }
+
+{ "register_user_for_event": { "login": "Jaroslaw", "password": "Puszek", "eventname": "Dodawanie referatów" } }
+{ "register_user_for_event": { "login": "Edek", "password": "Edek", "eventname": "Dodawanie referatów" } }
+
+{ "talk": { "login": "Jaroslaw", "password": "Puszek", "speakerlogin": "Jaroslaw", "talk": "1", "title": "Tytuł referatu", "start_timestamp": "2017-07-07 18:15 +02", "room": "Sala tronowa", "initial_evaluation": 10, "eventname": "Dodawanie referatów" } }
+
+{ "proposal": { "login": "Edek", "password": "Edek", "talk": "e1", "title": "Tytuł Edka", "start_timestamp": "2017-07-08 12:00 +02" } }

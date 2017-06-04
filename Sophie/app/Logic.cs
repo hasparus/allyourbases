@@ -99,9 +99,9 @@ public static class Logic
         if (!ValidCallParameters(parameters, new[] { "baza", "login", "password" }))
             return null;
 
-        return (parameters["baza"].ToString(),
-                parameters["login"].ToString(),
-                parameters["password"].ToString());
+        return (parameters["baza"].ToSqlString(),
+                parameters["login"].ToSqlString(),
+                parameters["password"].ToSqlString());
     }
 
     private static bool ValidCallParameters(JObject given, IEnumerable<string> requested)
@@ -118,7 +118,7 @@ public static class Logic
                     if (_dataAccess?.NewConnection() == null)
                         return CallResult.Error("Can't drop if connection isn't estabilished");
                     if (!ValidCallParameters(args, new[] {"secret"})
-                        || args["secret"].ToString() != "42")
+                        || args["secret"].ToSqlString() != "42")
                         return CallResult.Error("Haha. No dropping if you don't know secret.");
                     return _dataAccess.ExecuteSqlFromFile("db/drop.sql");
                 }
@@ -194,7 +194,7 @@ public static class Logic
                         return CallResult.Error("Wrong arguments for recommended talks.");
 
                     var callResult = _dataAccess.ExecuteSqlFromString(
-                        $"select * from participant where login = '{args["login"]}' and password_hash = '{args["password"]}'");
+                        $"select * from participant where login = '{args["login"].ToSqlString()}' and password_hash = '{args["password"].ToSqlString()}'");
 
                     Debug.Log("request author: ");
                     Debug.Log(callResult.ToString());
@@ -203,8 +203,10 @@ public static class Logic
                     {
                         var user = callResult.Data[0];
 
-                        if (user["login"] != args["login"])
+                        if (user["login"].Value<string>() != args["login"].Value<string>())
                         {
+                            Debug.Log(user["login"].ToString());
+                            Debug.Log(args["login"].ToString());
                             throw new ArgumentException("Database is lying to me.");
                         }
 
