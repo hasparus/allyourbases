@@ -1,0 +1,7 @@
+{ "connect": { "baza": "testbase", "login": "beata", "password": "beata" } }
+{ "drop_the_base": { "secret": "42" } }
+{ "setup": { "baza": "testbase", "login": "beata", "password": "beata" } }
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
+{ "drop_the_base": { "secret": "42" } }
+{ "setup": { "baza": "testbase", "login": "beata", "password": "beata" } }
+{ "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Jaroslaw", "newpassword": "Puszek" } }
