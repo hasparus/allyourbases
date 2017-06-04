@@ -34,3 +34,7 @@ in this directory.
 ## ER Diagrams
 
 ER diagrams are located in `entity_relation_diagrams/` directory.
+
+## Sql Schema
+
+Sql schema is located in `db/open.sql/`.
