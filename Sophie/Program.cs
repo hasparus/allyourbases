@@ -13,7 +13,7 @@ namespace Sophie
             while ((input = Console.ReadLine()) != null)
             {
                 // polecam zmienić formatowanie z None na Indented, jeśli zamierza Pani to czytać :D
-                CallResult.Formatting = Formatting.Indented;
+                CallResult.Formatting = Formatting.None;
 
                 var output = IoController.ExecuteInputLine(input);
                 if (output != "") Console.WriteLine(output);

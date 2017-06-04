@@ -197,8 +197,12 @@ namespace Sophie
                     var callResult = _dataAccess.ExecuteSqlFromString(
                         $"select * from participant where login = {args["login"].ToSqlString()} and password_hash = {args["password"].ToSqlString()}");
 
-                    Debug.Log("request author: ");
-                    Debug.Log(callResult.ToString());
+                    // Debug.Log("request author: ");
+                    // Debug.Log(callResult.ToString());
+
+                    var limit = args["limit"].Value<long>() == 0
+                        ? long.MaxValue
+                        : args["limit"].Value<long>();
 
                     CallResult result = new CallResult(CallResult.Status.Error);
                     if (callResult.Data != null && callResult.Data.Count > 0)
@@ -207,14 +211,11 @@ namespace Sophie
 
                         if (user["login"].Value<string>() != args["login"].Value<string>())
                         {
-                            Debug.Log(user["login"].ToString());
-                            Debug.Log(args["login"].ToString());
+                            // Debug.Log(user["login"].ToString());
+                            // Debug.Log(args["login"].ToString());
                             throw new ArgumentException("Database is lying to me.");
                         }
 
-                        var limit = args["limit"].Value<long>() == 0
-                            ? long.MaxValue
-                            : args["limit"].Value<long>();
 
                         var st = args["start_timestamp"].ToSqlString();
                         var et = args["end_timestamp"].ToSqlString();
@@ -261,11 +262,11 @@ namespace Sophie
                                   and t.accepted_timestamp is not null
                                   and fd.declarer_id = {user["id"]}");
 
-                        Debug.Log("---");
-                        Debug.Log(ratings.ToString());
-                        Debug.Log(attendances.ToString());
-                        Debug.Log(attendeeRatings.ToString());
-                        Debug.Log(friendBonuses.ToString());
+                        //Debug.Log("---");
+                        //Debug.Log(ratings.ToString());
+                        //Debug.Log(attendances.ToString());
+                        //Debug.Log(attendeeRatings.ToString());
+                        //Debug.Log(friendBonuses.ToString());
 
                         var rat = Dearrayify(ratings.Data);
                         var att = Dearrayify(attendances.Data);
@@ -279,10 +280,9 @@ namespace Sophie
                                 where t.start_timestamp >= {st}
                                   and t.start_timestamp <= {et}
                                   and t.rejected_timestamp is null
-                                  and t.accepted_timestamp is not null
-                                limit {limit};");
+                                  and t.accepted_timestamp is not null;");
 
-                        Debug.Log(result.ToString());
+                        //Debug.Log(result.ToString());
 
                         if (result.State == CallResult.Status.Error)
                             return CallResult.Error("Score failed.");
@@ -292,9 +292,11 @@ namespace Sophie
                             var jo = (JObject) jToken;
                             jo.Add("score", Score(jo["talk"].Value<string>(), att, rat, atr, frb));
                         }
-                        Debug.Log("---");
+                        //Debug.Log("---");
 
                     }
+                    result = new CallResult(CallResult.Status.Ok,
+                        new JArray(result.Data.OrderByDescending(x => x["score"].Value<int>()).Take(Convert.ToInt32(Math.Min(limit, int.MaxValue)))));
                     return result;
                 }
             }
@@ -302,23 +304,87 @@ namespace Sophie
 
         private static int Score
             (string talk, JObject attendances, JObject ratings, JObject attendeeRatings, JObject friendBonuses)
-        {
+        { // ta metoda jest ohydna
             try
             {
                 const int middleScore = 5;
-                var att = attendances[talk] != null ? attendances[talk]["attendances"].Value<int>() : 0;
-                var ratingSum = ratings[talk] != null ? ratings[talk]["sum"].Value<int>() : 0;
-                var ratingCount = ratings[talk] != null ? ratings[talk]["count"].Value<int>() : 0;
-                var aRatingSum = ratings[talk] != null ? attendeeRatings[talk]["sum"].Value<int>() : 0;
-                var aRatingCount = ratings[talk] != null ? attendeeRatings[talk]["count"].Value<int>() : 0;
-                var fBonus = friendBonuses[talk] != null ? friendBonuses[talk]["bonus"].Value<int>() : 0;
+                int att;
+                try
+                {
+                    att = attendances[talk] != null
+                        ? attendances[talk]["attendances"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    att = 0;
+                }
+
+                int ratingSum;
+                try
+                {
+                    ratingSum = ratings[talk] != null
+                        ? ratings[talk]["sum"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    ratingSum = 0;
+                }
+
+                int ratingCount;
+                try
+                {
+                    ratingCount = ratings[talk] != null
+                        ? ratings[talk]["count"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    ratingCount = 0;
+                }
+
+                int aRatingSum;
+                try
+                {
+                    aRatingSum = ratings[talk] != null
+                        ? attendeeRatings[talk]["sum"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    aRatingSum = 0;
+                }
+                int aRatingCount;
+                try
+                {
+                    aRatingCount = ratings[talk] != null
+                        ? attendeeRatings[talk]["count"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    aRatingCount = 0;
+                }
+                int fBonus;
+                try
+                {
+                    fBonus = friendBonuses[talk] != null
+                        ? friendBonuses[talk]["bonus"].Value<int?>() ?? 0
+                        : 0;
+                }
+                catch
+                {
+                    fBonus = 0;
+                }
+                
                 return att + ratingSum - middleScore * ratingCount + aRatingSum - middleScore * aRatingCount + fBonus;
             }
-            catch (JsonException) //bad design
+            catch (JsonException)
             {
                 return 0;
             }
-        }   
+        }
 
         private static JObject Dearrayify(JArray jarr)
         {

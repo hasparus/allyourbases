@@ -25,7 +25,6 @@ namespace Sophie.Utils
         {
             if (!Regex.IsMatch(s, @"^[żźćńółęąśŻŹĆĄŚĘŁÓŃa-zA-Z0-9\-+&_.:\s]+$"))
             {
-                Console.WriteLine(s + " nie przeszło!");
                 return " --";
             }
             return s;
