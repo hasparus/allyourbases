@@ -10,9 +10,9 @@ def launch args
   if mode == 't' || mode == 'test'
     scenarios = Dir['test_scenarios/*.scenario'] if scenarios.empty?
     scenarios.each do |scenario|
-      puts "\033[35m Running scenario: #{scenario} \n ~~~ \033[37m"
-      puts `#{cmd} < #{scenario}`
-      puts "\033[35m ~~~ \033[37m\033[39m"
+      STDERR.puts "\033[35m Running scenario: #{scenario} \n ~~~ \033[37m"
+      STDERR.puts `#{cmd} < #{scenario}`
+      STDERR.puts "\033[35m ~~~ \033[37m\033[39m"
     end
   end
 end

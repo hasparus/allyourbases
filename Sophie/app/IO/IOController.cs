@@ -8,14 +8,7 @@ namespace Sophie.IO
 {
     public class IoController
     {
-        public IoController()
-        {
-            // [ Note ]
-            // Bad news: .NET Core lacks OpenStandardInput(int) method
-            // for extending ReadLine buffer size.
-            // Good news: In .NET Core console app running on Ubuntu
-            // there is no limit on ReadLine buffer size.
-        }
+        public static int LineNumber = 0;
 
         private static string SkipCommentAndEmptyLine(string line, bool silence = true)
             => line.Trim().Length == 0 || line[0] == '#'
@@ -32,6 +25,7 @@ namespace Sophie.IO
             }
 
             JToken json;
+            LineNumber++;
 
             try
             {

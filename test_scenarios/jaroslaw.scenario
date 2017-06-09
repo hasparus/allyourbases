@@ -35,12 +35,12 @@
 # Jaroslaw odrzuca wykład Fiony
 { "reject": { "login": "Jaroslaw", "password": "Puszek", "talk": "5" } }
 
-{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Puszek" } }
-{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Edek" } }
-{ "friends": { "login": "Fiona", "password": "Kocimietka", "login2": "Jaroslaw" } }
-{ "friends": { "login": "Edek", "password": "Edek", "login2": "Fiona" } }
-{ "friends": { "login": "Edek", "password": "Edek", "login2": "Puszek" } }
-{ "friends": { "login": "Puszek", "password": "Whiskas", "login2": "Edek" } }
+{ "friends": { "login1": "Fiona", "password": "Kocimietka", "login2": "Puszek" } }
+{ "friends": { "login1": "Fiona", "password": "Kocimietka", "login2": "Edek" } }
+{ "friends": { "login1": "Fiona", "password": "Kocimietka", "login2": "Jaroslaw" } }
+{ "friends": { "login1": "Edek", "password": "Edek", "login2": "Fiona" } }
+{ "friends": { "login1": "Edek", "password": "Edek", "login2": "Puszek" } }
+{ "friends": { "login1": "Puszek", "password": "Whiskas", "login2": "Edek" } }
 
 { "organizer": { "secret": "d8578edf8458ce06fbc5bb76a58c5ca4", "newlogin": "Gargamel", "newpassword": "Klakier" } }
 { "user": { "login": "Gargamel", "password": "Klakier", "newlogin": "Klakier", "newpassword": "Rudy102" } }
@@ -92,9 +92,9 @@
 { "register_user_for_event": { "login": "Edek", "password": "Edek", "eventname": "Tajne wydarzenie Jarosława" } }
 { "register_user_for_event": { "login": "Wilhelm", "password": "Wilhelm", "eventname": "Tajne wydarzenie Jarosława" } }
 { "register_user_for_event": { "login": "Vlad", "password": "Vlad", "eventname": "Tajne wydarzenie Jarosława" } }
-{ "friends": { "login": "Wilhelm", "password": "Wilhelm", "login2": "Edek" } }
-{ "friends": { "login": "Edek", "password": "Edek", "login2": "Wilhelm" } }
-{ "friends": { "login": "Edek", "password": "Edek", "login2": "Vlad" } }
+{ "friends": { "login1": "Wilhelm", "password": "Wilhelm", "login2": "Edek" } }
+{ "friends": { "login1": "Edek", "password": "Edek", "login2": "Wilhelm" } }
+{ "friends": { "login1": "Edek", "password": "Edek", "login2": "Vlad" } }
 
 { "friends_events": { "login": "Edek", "password": "Edek", "eventname": "Żoliborski zjazd miłośników kotów" } }
 { "friends_events": { "login": "Edek", "password": "Edek", "eventname": "Tajne wydarzenie Jarosława" } }

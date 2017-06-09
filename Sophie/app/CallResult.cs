@@ -47,10 +47,10 @@ namespace Sophie
         {
             var jo = new JObject
             {
-                ["status"] = State.Humanize()
+                ["status"] = State.Humanize().ToUpper()
             };
 
-            if (Data != null && Data.Count > 0)
+            if (Data != null)
                 jo["data"] = Data;
             return jo;
         }

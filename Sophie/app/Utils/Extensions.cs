@@ -23,7 +23,7 @@ namespace Sophie.Utils
     {
         public static string Sanitize(this string s)
         {
-            if (!Regex.IsMatch(s, @"^[żźćńółęąśŻŹĆĄŚĘŁÓŃa-zA-Z0-9\-+&_.:\s]+$"))
+            if (!Regex.IsMatch(s, @"^[żźćńółęąśŻŹĆĄŚĘŁÓŃa-zA-Z0-9\-+&_.:#\s]*$"))
             {
                 return " --";
             }

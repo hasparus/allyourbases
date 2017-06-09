@@ -228,10 +228,13 @@ declare
 
 begin
   if authorize_organiser(org_login, org_password) then
+    raise notice 'Creating talk %', talk_id;
     if ename = '' then
+      raise notice 'Empty event';
       ename = null;
     end if;
 
+    raise notice 'Non empty event %', ename;
     select id from participant
       into _speaker_id
       where login = speaker
@@ -353,12 +356,12 @@ begin
   end if;
 
   return query 
-    select p.login, talk.id, talk.start_timestamp, talk.title, talk.room from
+    select speaker.login, talk.id, talk.start_timestamp, talk.title, talk.room from
       participant p
       join registration on (p.id = registration.participant_id)
       join talk using (event_name)
-      where p.login = _login
-        and talk.rejected_timestamp is null
+      join participant speaker on (talk.speaker_id = speaker.id)
+      where talk.rejected_timestamp is null
         and talk.accepted_timestamp is not null
       order by start_timestamp
       limit _limit;

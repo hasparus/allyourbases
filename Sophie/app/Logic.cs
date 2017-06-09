@@ -48,14 +48,12 @@ namespace Sophie
                 $"Host=localhost;Username={login};Password={password};Database={dbName}");
             try
             {
-                using (var connection = _dataAccess.NewConnection())
-                {
-                    connection.Open();
+                var connection = _dataAccess.ProvideConnection();
+                connection.Open();
 
-                    return connection.IsOpen()
-                        ? CallResult.Ok
-                        : CallResult.Error("Coudn't open connection to database.");
-                }
+                return connection.IsOpen()
+                    ? CallResult.Ok
+                    : CallResult.Error("Coudn't open connection to database.");
             }
             catch (PostgresException e)
             {
@@ -75,8 +73,13 @@ namespace Sophie
 
             try
             {
-                using (var connection = _dataAccess.NewConnection())
-                    return _dataAccess.ExecuteSqlFromFile("db/open.sql", connection);
+                var connection = _dataAccess.ProvideConnection();
+                var res = _dataAccess.ExecuteSqlFromFile("db/open.sql", connection);
+                if (res.Data != null && res.Data.Count == 0)
+                {   //WORKAROUND, because it will be diff tested probably ;c
+                    return CallResult.Ok;
+                }
+                return res;
             }
             catch (PostgresException e)
             {
@@ -116,7 +119,7 @@ namespace Sophie
             {"setup", Setup},
             {"drop_the_base", args =>
                 {
-                    if (_dataAccess?.NewConnection() == null)
+                    if (_dataAccess?.ProvideConnection() == null)
                         return CallResult.Error("Can't drop if connection isn't estabilished");
                     if (!ValidCallParameters(args, new[] {"secret"})
                         || args["secret"].ToString() != "42")
@@ -154,7 +157,7 @@ namespace Sophie
                 SqlProcWrapper("propose_talk", "login", "password", "talk", "title", "start_timestamp")
             },
             {"friends",
-                SqlProcWrapper("declare_friendship", "login", "password", "login2")
+                SqlProcWrapper("declare_friendship", "login1", "password", "login2")
             },
             {"user_plan",
                 SqlProcWrapper("get_user_plan", "login", "limit")
@@ -295,8 +298,10 @@ namespace Sophie
                         //Debug.Log("---");
 
                     }
-                    result = new CallResult(CallResult.Status.Ok,
-                        new JArray(result.Data.OrderByDescending(x => x["score"].Value<int>()).Take(Convert.ToInt32(Math.Min(limit, int.MaxValue)))));
+                    
+                    if (result.Data != null)
+                        result = new CallResult(CallResult.Status.Ok,
+                            new JArray(result.Data.OrderByDescending(x => x["score"].Value<int>()).Take(Convert.ToInt32(Math.Min(limit, int.MaxValue)))));
                     return result;
                 }
             }

@@ -11,6 +11,7 @@ namespace Sophie.DataLayer
     public class DataAccess
     {
         private readonly string _connectionString;
+        private NpgsqlConnection _mainConnection;
 
         public DataAccess(string connectionString)
         {
@@ -21,11 +22,9 @@ namespace Sophie.DataLayer
             string filename,
             NpgsqlConnection connection = null)
         {
-            connection = connection ?? new NpgsqlConnection(_connectionString);
-
             using (var fs = new FileStream(filename, FileMode.Open))
             using (var setupFile = new StreamReader(fs))
-                return ExecuteSqlFromString(setupFile.ReadToEnd(), connection);
+                return ExecuteSqlFromString(setupFile.ReadToEnd());
         }
 
         public CallResult ExecuteSqlFromString(
@@ -36,7 +35,7 @@ namespace Sophie.DataLayer
             {
                 //Debug.Log(" executing ~~> " + s);
 
-                connection = connection ?? new NpgsqlConnection(_connectionString);
+                connection = connection ?? ProvideConnection();
                 connection.TryOpen();
 
                 using (var cmd = new NpgsqlCommand(s, connection))
@@ -73,21 +72,27 @@ namespace Sophie.DataLayer
                             );
                     }
                     reader.Dispose();
+                    connection.Close();
+                    //connection.Dispose();
                     //Debug.Log("Output from db: " + data);
                     return new CallResult(CallResult.Status.Ok, data);
                 }
             }
             catch (PostgresException e)
             {
+                connection?.Close();
+                //connection?.Dispose();
                 return CallResult.Error("Postgres exception catched in ExecuteSqlFromString. " + e.Message);
             }
         }
 
-        public NpgsqlConnection NewConnection()
+        public NpgsqlConnection ProvideConnection()
         {
             try
             {
-                return new NpgsqlConnection(_connectionString);
+                if (_mainConnection == null)
+                    _mainConnection = new NpgsqlConnection(_connectionString);
+                return _mainConnection;
             }
             catch (PostgresException)
             {
